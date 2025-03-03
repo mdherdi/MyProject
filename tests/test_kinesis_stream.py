@@ -30,7 +30,7 @@ def send_to_kinesis(stream_name, data):
         response = kinesis_client.put_record(
             StreamName=stream_name,
             Data=json.dumps(data),
-            PartitionKey=data["transaction_id"]  # Use transaction_id as the partition key
+            PartitionKey=data["transaction_id"]  
         )
         print(f"Sent transaction {data['transaction_id']} to Kinesis. SequenceNumber: {response['SequenceNumber']}")
     except Exception as e:
@@ -39,10 +39,10 @@ def send_to_kinesis(stream_name, data):
 # Main function to test the Kinesis stream
 def main():
     print("Starting Kinesis data stream test...")
-    for i in range(10):  # Send 10 mock transactions
+    for i in range(10):  
         transaction = generate_transaction()
         send_to_kinesis(stream_name, transaction)
-        time.sleep(1)  # Wait 1 second between transactions
+        time.sleep(1)  
     print("Test completed.")
 
 if __name__ == "__main__":

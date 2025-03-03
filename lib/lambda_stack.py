@@ -12,6 +12,7 @@ class LambdaStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, kinesis_stream,dynamodb_table,s3_bucket, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
+        # Create a Lambda Function
         process_lambda = _lambda.Function(
             self,
             "ProcessLambda",
