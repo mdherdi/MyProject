@@ -6,6 +6,9 @@ import decimal
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table("FraudulentTransactionsTable")
 
+s3 = boto3.client("s3")
+s3_bucket = "fraud-detection-storage-mk"
+
 def extract_features(transaction):
     """Extracts basic features from the transaction for fraud detection. Adding default to prevent error by missing value"""
     
@@ -48,6 +51,15 @@ def handler(event, context):
                 }
             )
             print(f"Stored transaction in DynamoDB: {status}")
+
+            # Store transaction in S3
+            s3_key = f"transactions/{transaction['transaction_id']}.json"
+            s3.put_object(
+                Bucket=s3_bucket,
+                Key=s3_key,
+                Body=json.dumps(transaction)
+            )
+            print(f"Stored transaction in S3: {s3_key}")
         except Exception as e:
             print(f"Error processing transaction: {e}. Record: {record}")
 

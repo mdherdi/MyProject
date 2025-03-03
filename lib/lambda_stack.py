@@ -9,7 +9,7 @@ import aws_cdk as cdk
 from constructs import Construct
 
 class LambdaStack(Stack):
-    def __init__(self, scope: Construct, construct_id: str, kinesis_stream,dynamodb_table, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, kinesis_stream,dynamodb_table,s3_bucket, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         process_lambda = _lambda.Function(
@@ -20,7 +20,11 @@ class LambdaStack(Stack):
 
             handler="transaction_process_lambda.handler",
             code=_lambda.Code.from_asset("lambda"),
-            timeout=Duration.seconds(30)
+            timeout=Duration.seconds(30),
+            environment={
+                "DYNAMODB_TABLE_NAME": dynamodb_table.table_name,
+                "S3_BUCKET_NAME": s3_bucket.bucket_name  
+            }
         )
 
          # IAM Role for Lambda
@@ -35,7 +39,10 @@ class LambdaStack(Stack):
                 iam.ManagedPolicy.from_aws_managed_policy_name("AmazonDynamoDBFullAccess")
             ]
         )
-        dynamodb_table.grant_write_data(lambda_role)
+        
+        dynamodb_table.grant_read_write_data(lambda_role)
+        s3_bucket.grant_read_write(lambda_role)
+
     
 
          # Add an event source mapping to trigger the Lambda function from the Kinesis stream
