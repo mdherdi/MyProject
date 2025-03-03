@@ -3,12 +3,13 @@ from aws_cdk import (
     aws_lambda as _lambda, 
     aws_lambda_event_sources as event_sources,
     aws_iam as iam, 
+    aws_dynamodb as dynamodb,
     Duration)
 import aws_cdk as cdk
 from constructs import Construct
 
 class LambdaStack(Stack):
-    def __init__(self, scope: Construct, construct_id: str, kinesis_stream, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, kinesis_stream,dynamodb_table, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         process_lambda = _lambda.Function(
@@ -34,6 +35,7 @@ class LambdaStack(Stack):
                 iam.ManagedPolicy.from_aws_managed_policy_name("AmazonDynamoDBFullAccess")
             ]
         )
+        dynamodb_table.grant_write_data(lambda_role)
     
 
          # Add an event source mapping to trigger the Lambda function from the Kinesis stream
