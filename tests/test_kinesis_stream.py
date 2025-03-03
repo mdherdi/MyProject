@@ -1,6 +1,7 @@
 import boto3
 import json
 import random
+import uuid
 import time
 
 # Initialize the Kinesis client
@@ -12,12 +13,12 @@ stream_name = "TransactionStream"
 # Function to generate mock transaction data
 def generate_transaction():
     return {
-        "transaction_id": f"T{random.randint(10000, 99999)}",
+        "transaction_id": f"T{str(uuid.uuid4())}",
         "user_id": f"U{random.randint(10000, 99999)}",
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "amount": round(random.uniform(10.0, 1000.0), 2),
+        "amount": random.randint(10, 1000),
         "device_type": random.choice(["mobile", "desktop"]),
-        "location": random.choice(["California, USA", "New York, USA", "Texas, USA"]),
+        "location": random.choice(["A", "B", "C", "D", "E", "F", "G", "H"]),
         "is_vpn": random.choice([True, False]),
         "card_type": random.choice(["credit", "debit"]),
         "status": random.choice(["approved", "declined"])
@@ -38,7 +39,7 @@ def send_to_kinesis(stream_name, data):
 # Main function to test the Kinesis stream
 def main():
     print("Starting Kinesis data stream test...")
-    for _ in range(10):  # Send 10 mock transactions
+    for i in range(10):  # Send 10 mock transactions
         transaction = generate_transaction()
         send_to_kinesis(stream_name, transaction)
         time.sleep(1)  # Wait 1 second between transactions
