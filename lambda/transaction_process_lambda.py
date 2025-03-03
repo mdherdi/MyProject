@@ -5,10 +5,11 @@ import decimal
 # Initialize DynamoDB client
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table("FraudulentTransactionsTable")
-
+#Initialize S3 Client
 s3 = boto3.client("s3")
 s3_bucket = "fraud-detection-storage-mk"
 
+# Method to extract features
 def extract_features(transaction):
     """Extracts basic features from the transaction for fraud detection. Adding default to prevent error by missing value"""
     
@@ -47,7 +48,7 @@ def handler(event, context):
                     "amount": transaction.get("amount", 0),
                     "fraud_score": fraud_score,
                     "status": status,
-                    "features": features  # Pass as a dictionary (Map)
+                    "features": features 
                 }
             )
             print(f"Stored transaction in DynamoDB: {status}")
